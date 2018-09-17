@@ -1,0 +1,96 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'verdor/layui/css/layui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script>
+        var login_url = "{% url 'accounts:login' %}"
+    </script>
+</head>
+<body>
+<div class="kit-login">
+    <div class="kit-login-bg"></div>
+    <div class="kit-login-wapper">
+        <h2 class="kit-login-slogan">欢迎使用 <br> CMDB 后台管理系统</h2>
+        <div class="kit-login-form">
+            <h4 class="kit-login-title">登录</h4>
+            <form class="layui-form">{% csrf_token %}
+                {{ form.url }}
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <i class="layui-icon">&#xe612;</i>
+                        <span class="kit-login-input">
+                            {{ form.username }}
+                        </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+                <div class="kit-login-row">
+                    <div class="kit-login-col">
+                        <i class="layui-icon">&#xe64c;</i>
+                        <span class="kit-login-input">
+                            {{ form.password }}
+                        </span>
+                    </div>
+                    <div class="kit-login-col"></div>
+                </div>
+
+                <div class="kit-login-row">
+                    <button class="layui-btn kit-login-btn" lay-submit="submit" lay-filter="login_btn">登录</button>
+                </div>
+                <div class="kit-login-row" style="margin-bottom:0;">
+                    <a href="javascript:;" style="color: rgb(153, 153, 153); text-decoration: none; font-size: 13px;"
+                       id="forgot">忘记密码 ？</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="{% static 'verdor/layui/layui.js' %}"></script>
+<script>
+    layui.use(['layer', 'form', 'element'], function () {
+        var form = layui.form,
+            $ = layui.jquery;
+        $('#forgot').on('click', function () {
+            layer.msg('请联系管理员.');
+        });
+
+        //监听提交
+        form.on('submit(login_btn)', function (data) {
+            var layIndex = layer.load(2, {
+                shade: [0.1, '#393D49']
+            });
+            $.ajax({
+                url: login_url,
+                type: 'POST',
+                dataType: 'json',
+                data: data.field,
+                success: function (data) {
+                    if(typeof data==='object'){
+                        console.log(data.URL);
+                        alert('------------');
+                        window.location.href=data.URL;
+                    }
+                    new_data = JSON.parse(data);
+                    $.each(new_data, function (k, v) {
+                        layer.msg(v[0].message);
+                        return false;
+                    });
+                    layer.close(layIndex);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    layer.close(layIndex);
+                    layer.msg('网络超时,请稍后重试...');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

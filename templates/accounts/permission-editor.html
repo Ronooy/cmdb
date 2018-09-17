@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}{{ html_title }}{% endblock %}
+{% block content %}
+    {% include 'form.html' %}
+{% endblock %}
+{% block script %}
+    {% include 'form-js.html' %}
+{% endblock %}

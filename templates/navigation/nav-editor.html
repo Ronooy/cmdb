@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}{{ html_url }}{% endblock %}
+{% block content %}
+    <div class="row">
+        {% include 'form.html' %}
+    </div>
+{% endblock %}
+{% include 'form-js.html' %}

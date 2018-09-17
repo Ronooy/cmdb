@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ html_title }}{% endblock %}
+{% block css_or_js %}
+    <link rel="stylesheet" href="{% static 'css/InputTags.css' %}">{% endblock %}
+{% block content %}
+    <div class="row">
+        {% include 'form.html' %}
+    </div>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript" src="{% static 'js/InputTags.js' %}"></script>
+    <script type="text/javascript">
+        CustomInputTag({
+            select: '#id_label'
+            , tagNumber: 5
+        });
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#id_purchase_day'
+                , format: 'yyyy-MM-dd'
+            });
+            laydate.render({
+                elem: '#id_expire_day'
+                , format: 'yyyy-MM-dd'
+            });
+        })
+    </script>
+    {% include 'form-js.html' %}
+
+{% endblock %}

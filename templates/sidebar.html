@@ -1,0 +1,83 @@
+{% load staticfiles %}
+<section class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel">
+        <div class="pull-left image">
+            <img src="{{ MEDIA_URL }}{{ request.user.image }}" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+            <p>{{ request.user }}</p>
+            <!-- Status -->
+            <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
+        </div>
+    </div>
+    <!-- Sidebar Menu -->
+
+    <ul class="sidebar-menu" data-widget="tree">
+        <li class="header"><span>导航窗口</span></li>
+        <!-- Optionally, you can add icons to the links -->
+        <li id="index">
+            <a href="{% url 'index' %}"><i class="fa fa fa-dashboard"></i> <span>仪表盘</span></a>
+        </li>
+        <li class="treeview" id="nav">
+            <a href="javascript:;"><i class="fa fa-align-justify"></i> <span>站点导航</span>
+                <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+            </a>
+            <ul class="treeview-menu">
+                <li id="nav-index"><a href="{% url 'navigation:index' %}">站点导航</a></li>
+                <li id="nav-list"><a href="{% url 'navigation:nav-list' %}">管理站点</a></li>
+            </ul>
+        </li>
+        <li class="treeview" id="cmdb">
+            <a href="javascript:;"><i class="fa fa-database"></i> <span>资产管理</span>
+                <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+            </a>
+            <ul class="treeview-menu">
+                <li id="asset"><a href="{% url 'cmdb:asset' %}">资产总表</a></li>
+                <li id="server"><a href="{% url 'cmdb:server' %}">主机管理</a></li>
+{#                <li id="idc"><a href="{% url 'cmdb:idc' %}">机房管理</a></li>#}
+                <li><a href="#">机柜管理</a></li>
+            </ul>
+        </li>
+        <li class="treeview" id="accounts">
+            <a href="javascript:;"><i class="fa fa-users"></i>
+                <span>用户管理</span>
+                <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+            </a>
+            <ul class="treeview-menu">
+                <li id="user"><a href="{% url 'accounts:user-list' %}">用户管理</a></li>
+                <li id="role"><a href="{% url 'accounts:role-list' %}">角色管理</a></li>
+                <li id="permission"><a href="{% url 'accounts:permission-list' %}">权限管理</a></li>
+            </ul>
+        </li>
+    </ul>
+    <!-- /.sidebar-menu -->
+    <script>
+        pathname=window.location.pathname;
+        name_list=pathname.split('/');
+        var page=document.getElementById(name_list[1]);
+        if(pathname==='/'){
+            document.getElementById('index').className='active'
+        }
+        if(name_list[1]==='nav'){
+            page.className+=' active';
+            if(name_list[2]){
+                document.getElementById('nav-list').className='active';
+            }
+            else{
+                document.getElementById('nav-index').className='active';
+            }
+        }
+        else if(name_list[3] === 'deny'){}
+        else if(name_list[1] === 'cmdb'){
+            page.className+=' active';
+            document.getElementById(name_list[2]).className='active'
+        }
+        else if(name_list[1] === 'accounts'){
+            page.className+=' active';
+            document.getElementById(name_list[2]).className='active'
+        }
+
+
+    </script>
+</section>

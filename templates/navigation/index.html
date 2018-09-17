@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ html_title }}{% endblock %}
+{% block content %}
+    {% if not nav %}
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <a href="{% url 'navigation:nav-add' %}">
+                <span class="btn btn-default"><b>添加一个导航</b> <i class="fa fa-plus"></i></span>
+            </a>
+        </div>
+    {% endif %}
+    <div class="box-body">
+        {% for n in nav %}
+            <a href="{{ n.url }}" target="_blank">
+                <div class="col-md-3">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">{{ n.name }}</h3>
+                        </div><!-- /.box-header -->
+                        <div class="box-body">
+                            {{ n.remark }}
+                        </div><!-- /.box-body -->
+                    </div><!-- /.box -->
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}

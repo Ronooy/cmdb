@@ -1,0 +1,144 @@
+<script type="text/javascript">
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#' + ITABLE
+            , height: 'full-200'
+            , toolbar: '#toolbar-box'
+            , url: DATA_URL //数据接口
+            , cellMinWidth: 80
+            , page: true //开启分页
+            , response: {
+                statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
+            }
+            , parseData: function (response) {
+                return {
+                    'code': response.status,
+                    "msg": response.message, //解析提示文本
+                    "count": response.count, //解析数据长度
+                    "data": response.data //解析数据列表
+                }
+            }
+            , cols: COLS
+        });
+        var active = {
+            SearchData: function () {
+                table.reload('{{ kwargs.table_id }}', {
+                    where: {
+                        q: $('input[name="q"]').val()
+                    }
+                })
+            },
+            SelectData: function () {
+                var dict = {};
+                array = $('form#' + ITABLE + "-headers").serializeArray();
+                for (i = 0; i < array.length; i++) {
+                    dict[array[i].name] = array[i].value
+                }
+                console.log(dict);
+                if (dict) {
+                    table.reload('{{ kwargs.table_id }}', {
+                        where: dict
+                    })
+                }
+            }
+        };
+        var select_q_str = "#" + ITABLE + "-headers " + ".tables-search";
+        var select_s_str = "#" + ITABLE + "-headers " + "select";
+        $("#" + ITABLE + "-headers").on('submit',function () {
+            active['SearchData'].call(this);
+            return false;
+        });
+        $(select_q_str).on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+            return false;
+        });
+        $(select_s_str).on('change', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+            return false;
+        });
+        table.on('toolbar(' + ITABLE + ')', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            if (obj.event == 'DeleteData') {
+                var data = checkStatus.data;
+                if (data.length <= 0) {
+                    layer.alert('请选中后再操作！');
+                    return false
+                }
+                var layIndex = layer.load(2, {
+                    shade: [0.1, '#393D49']
+                });
+                req = [];
+                message = "确认删除以下数据：";
+                formdata = new FormData();
+                for (i = 0; i < data.length; i++) {
+                    message += data[i][MESSAGE] + '\r\n\r\n';
+                    for (j = 0; j < data[i]; j++) {
+                    }
+                    $.each(data[i], function (k, v) {
+                        pd = k + '=' + v;
+                        req.push(pd);
+                        formdata.append(k, v)
+                    })
+                }
+                layer.confirm(message, function () {
+                    jQuery.ajax({
+                        type: 'POST'
+                        , url: DELETE_URL
+                        , data: formdata
+                        , contentType: false
+                        , processData: false
+                        , dataType: 'json'
+                        , success: function (data) {
+                            if (data.status == 200) {
+                                layer.msg(data.message)
+                            }
+                            else {
+                                layer.msg(data.error)
+                            }
+                            layer.close(layIndex);
+                            table.reload(ITABLE)
+                        }
+                        , error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            layer.close(layIndex);
+                            layer.msg('网络超时,请稍后重试...');
+                        }
+                    });
+                });
+                layer.close(layIndex);
+            }
+        });
+        table.on('tool(' + ITABLE + ')', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('确认删除' + data[MESSAGE] + '吗？', function (index) {
+                    var layIndex = layer.load(2, {
+                        shade: [0.1, '#393D49']
+                    });
+                    $.ajax({
+                        type: 'POST'
+                        , url: DELETE_URL
+                        , data: data
+                        , dataType: 'json'
+                        , success: function (data) {
+                            if (data.status == 200) {
+                                layer.msg(data.message);
+                                table.reload(ITABLE)
+                            }
+                            else {
+                                layer.msg(data.error)
+                            }
+                            layer.close(layIndex);
+                        }
+                        , error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            layer.close(layIndex);
+                            layer.msg('网络超时,请稍后重试...');
+                        }
+                    });
+                });
+            }
+        });
+    })
+</script>

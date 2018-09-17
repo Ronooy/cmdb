@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}仪表盘{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <i class="fa fa-bar-chart-o"></i>
+                    <h3 class="box-title">设备状态
+                        <small>(%)</small>
+                    </h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" data-widget="remove"><i
+                                class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-6 col-md-2 col-md-offset-1 text-center">
+                            <input type="text" class="knob" value="{{ on_rate }}" data-width="90" data-height="90"
+                                   data-fgColor="#00a65a" data-readonly="true" title="在线">
+                            <div class="knob-label">在线</div>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-xs-6 col-md-2 text-center">
+                            <input type="text" class="knob" value="{{ no_rate }}" data-width="90" data-height="90"
+                                   data-fgColor="#f56954" data-readonly="true" title="下线">
+                            <div class="knob-label">下线</div>
+                        </div>
+                        <!-- ./col -->
+
+                        <div class="col-xs-6 col-md-2 text-center">
+                            <input type="text" class="knob" value="{{ bd_rate }}" data-width="90" data-height="90"
+                                   data-fgColor="#932ab6" data-readonly="true" title="故障">
+                            <div class="knob-label">故障</div>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-xs-6 col-md-2 text-center">
+                            <input type="text" class="knob" value="{{ bu_rate }}" data-width="90" data-height="90"
+                                   data-fgColor="#3c8dbc" data-readonly="true" title="备用">
+                            <div class="knob-label">备用</div>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-xs-6 col-md-2 text-center">
+                            <input type="text" class="knob" value="{{ un_rate }}" data-width="90" data-height="90"
+                                   data-fgColor="#cccccc" data-readonly="true" title="未知">
+                            <div class="knob-label">未知</div>
+                        </div>
+                        <!-- ./col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i
+                                class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" data-widget="remove"><i
+                                class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="status-count" style="height:450px"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="server-count" style="height:450px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript" src="{% static 'verdor/Knob/jquery.knob.js' %}"></script>
+    <script type="text/javascript" src="{% static 'verdor/echarts/echarts.min.js' %}"></script>
+    <script type="text/javascript">
+        var x_status ={{ xAxis|safe }};
+        var y_status ={{ yAxis|safe }};
+        var x_server ={{ server_xAxis|safe }};
+        var y_server ={{ server_yAxis|safe }};
+    </script>
+    <script type="text/javascript">
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            var loading = layer.load(2, {
+                shade: [0.4, '#393D49']
+            });
+            $(".knob").knob({
+                draw: function () {
+                    // "tron" case
+                    if (this.$.data('skin') == 'tron') {
+                        var a = this.angle(this.cv)  // Angle
+                            , sa = this.startAngle          // Previous start angle
+                            , sat = this.startAngle         // Start angle
+                            , ea                            // Previous end angle
+                            , eat = sat + a                 // End angle
+                            , r = true;
+
+                        this.g.lineWidth = this.lineWidth;
+                        this.o.cursor
+                        && (sat = eat - 0.3)
+                        && (eat = eat + 0.3);
+                        if (this.o.displayPrevious) {
+                            ea = this.startAngle + this.angle(this.value);
+                            this.o.cursor
+                            && (sa = ea - 0.3)
+                            && (ea = ea + 0.3);
+                            this.g.beginPath();
+                            this.g.strokeStyle = this.previousColor;
+                            this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sa, ea, false);
+                            this.g.stroke();
+                        }
+
+                        this.g.beginPath();
+                        this.g.strokeStyle = r ? this.o.fgColor : this.fgColor;
+                        this.g.arc(this.xy, this.xy, this.radius - this.lineWidth, sat, eat, false);
+                        this.g.stroke();
+
+                        this.g.lineWidth = 2;
+                        this.g.beginPath();
+                        this.g.strokeStyle = this.o.fgColor;
+                        this.g.arc(this.xy, this.xy, this.radius - this.lineWidth + 1 + this.lineWidth * 2 / 3, 0, 2 * Math.PI, false);
+                        this.g.stroke();
+                        return false;
+                    }
+                }
+            });
+            var StatusCountChart = echarts.init(document.getElementById('status-count'));
+            var ServiceCountChart = echarts.init(document.getElementById('server-count'));
+            var status_option = {
+                color: ['#3398DB'],
+                title: {
+                    text: '各状态资产数量统计'
+                },
+                tooltip: {},
+                legend: {
+                    data: ['数量']
+                },
+                xAxis: {
+                    data: ['在线', '下线', '故障', '备用', '未知']
+                },
+                yAxis: {},
+                series: [{
+                    name: '数量',
+                    type: 'bar',
+                    data: y_status
+                }]
+            };
+            var server_option = {
+                title: {
+                    text: '各类型资产数量统计',
+                    subtext: '纯属虚构',
+                    x: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: ['服务器','网络设备','存储设备','安全设备','付费软件/系统']
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: y_server,
+                        itemStyle: {
+                            emphasis: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+            StatusCountChart.setOption(status_option);
+            ServiceCountChart.setOption(server_option);
+            layer.close(loading);
+        });
+        /*
+        var inp=$('#qwq');
+        var int=window.setInterval("task()",100);
+        function task() {
+            value=parseInt(inp.val());
+            inp.val(value+1)
+        }*/
+
+    </script>
+{% endblock %}

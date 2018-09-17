@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}{{ html_title }}{% endblock %}
+{% block css_or_js %}
+    <link rel="stylesheet" href="{% static 'verdor/bootstrap-duallistbox-master/bootstrap-duallistbox.min.css' %}">
+{% endblock %}
+{% block content %}
+    {% include 'form.html' %}
+{% endblock %}
+{% block script %}
+        <script rel="script" src="{% static 'verdor/bootstrap-duallistbox-master/jquery.bootstrap-duallistbox.min.js' %}"></script>
+    {% include 'form-js.html' %}
+    <script type="text/javascript">
+        var editor_select = $('select[name="permissions"]').bootstrapDualListbox({
+            nonSelectedListLabel: '可用 权限',
+            selectedListLabel: '选中的 权限',
+            preserveSelectionOnMove: 'moved',
+            moveOnSelect: false
+        });
+    </script>
+{% endblock %}

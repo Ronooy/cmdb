@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ html_title }}{% endblock %}
+{% block content %}
+    <div class="row">
+        {% include 'form.html' %}
+    </div>
+{% endblock %}
+{% block script %}
+    {% include 'form-js.html' %}
+    <script type="text/javascript">
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#id_start_day'
+                , format: 'yyyy-MM-dd'
+            });
+            laydate.render({
+                elem: '#id_end_day'
+                , format: 'yyyy-MM-dd'
+            });
+        })
+    </script>
+{% endblock %}

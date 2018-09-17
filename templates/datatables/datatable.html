@@ -1,0 +1,13 @@
+{% load data_tag %}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <form class="form-inline" id="{{ kwargs.table_id }}-headers">
+            {% table_header kwargs.choices kwargs.search %}
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <table id="{{ kwargs.table_id }}" lay-filter="{{ kwargs.table_id }}"></table>
+    </div>
+</div>

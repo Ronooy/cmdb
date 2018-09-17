@@ -1,0 +1,25 @@
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <blockquote class="layui-elem-quote">{{ html_title }}</blockquote>
+</div>
+<div class="col-md-10 col-sm-12 col-xs-12">
+    <form class="form-horizontal">
+        {% csrf_token %}
+        {% for form in forms %}
+            <div class="form-group">
+                <label for="{{ form.id_for_label }}" class="col-md-1 {% if form.field.required %}control-label{% else %}control-label unrequired{% endif %}">{{ form.label }}</label>
+                <div class="{% if col_md %}{{ col_md }}{% else %}col-md-3{% endif %}">
+                    {{ form }}
+                </div>
+                <div class="col-md-2 input-error" data-error="{{ form.name }}"></div>
+            </div>
+        {% endfor %}
+        <div class="form-group">
+            <div class="col-md-offset-1 col-md-2 col-sm-2 col-xs-2">
+                <input class="btn btn-primary" type="submit" value="提交">
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-2">
+                <a href="{{ cancel }}" class="btn btn-primary">取消</a>
+            </div>
+        </div>
+    </form>
+</div>
